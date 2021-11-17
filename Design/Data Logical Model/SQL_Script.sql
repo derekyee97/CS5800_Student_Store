@@ -1,39 +1,39 @@
 
-CREATE SEQUENCE public.items_item_id_seq_1;
+CREATE SEQUENCE public.items_itemid_seq;
 
 CREATE TABLE public.Items (
-                Item_ID INTEGER NOT NULL DEFAULT nextval('public.items_item_id_seq_1'),
+                ItemID INTEGER NOT NULL DEFAULT nextval('public.items_itemid_seq'),
                 Name VARCHAR NOT NULL,
-                CONSTRAINT itemid PRIMARY KEY (Item_ID)
+                CONSTRAINT items_pk PRIMARY KEY (ItemID)
 );
 
 
-ALTER SEQUENCE public.items_item_id_seq_1 OWNED BY public.Items.Item_ID;
+ALTER SEQUENCE public.items_itemid_seq OWNED BY public.Items.ItemID;
 
-CREATE SEQUENCE public.historical_price_price_id_seq_1;
+CREATE SEQUENCE public.historicalprice_priceid_seq;
 
-CREATE TABLE public.Historical_Price (
-                Item_ID INTEGER NOT NULL,
-                Price_ID VARCHAR NOT NULL DEFAULT nextval('public.historical_price_price_id_seq_1'),
-                Start_Date DATE NOT NULL,
+CREATE TABLE public.HistoricalPrice (
+                PriceID INTEGER NOT NULL DEFAULT nextval('public.historicalprice_priceid_seq'),
+                ItemID INTEGER NOT NULL,
+                Start DATE NOT NULL,
                 Price REAL NOT NULL,
-                CONSTRAINT price_id_ PRIMARY KEY (Item_ID, Price_ID)
+                CONSTRAINT historicalprice_pk PRIMARY KEY (PriceID, ItemID)
 );
 
 
-ALTER SEQUENCE public.historical_price_price_id_seq_1 OWNED BY public.Historical_Price.Price_ID;
+ALTER SEQUENCE public.historicalprice_priceid_seq OWNED BY public.HistoricalPrice.PriceID;
 
-CREATE SEQUENCE public.item_picture_item_picture_id_seq;
+CREATE SEQUENCE public.itempicture_itempictureid_seq;
 
-CREATE TABLE public.Item_Picture (
-                Item_ID INTEGER NOT NULL,
-                Item_Picture_ID VARCHAR NOT NULL DEFAULT nextval('public.item_picture_item_picture_id_seq'),
+CREATE TABLE public.ItemPicture (
+                ItemPictureID INTEGER NOT NULL DEFAULT nextval('public.itempicture_itempictureid_seq'),
                 Picture BYTEA NOT NULL,
-                CONSTRAINT item_picture_id PRIMARY KEY (Item_ID, Item_Picture_ID)
+                ItemID INTEGER NOT NULL,
+                CONSTRAINT itempicture_pk PRIMARY KEY (ItemPictureID)
 );
 
 
-ALTER SEQUENCE public.item_picture_item_picture_id_seq OWNED BY public.Item_Picture.Item_Picture_ID;
+ALTER SEQUENCE public.itempicture_itempictureid_seq OWNED BY public.ItemPicture.ItemPictureID;
 
 CREATE TABLE public.Customer (
                 BroncoID INTEGER NOT NULL,
@@ -42,32 +42,6 @@ CREATE TABLE public.Customer (
                 DOB DATE NOT NULL,
                 Phone VARCHAR NOT NULL,
                 CONSTRAINT broncoid PRIMARY KEY (BroncoID)
-);
-
-
-CREATE SEQUENCE public.orders_order_id_seq;
-
-CREATE TABLE public.Orders (
-                BroncoID INTEGER NOT NULL,
-                Order_ID INTEGER NOT NULL DEFAULT nextval('public.orders_order_id_seq'),
-                Date DATE NOT NULL,
-                Time TIME NOT NULL,
-                Original_Price_Total REAL NOT NULL,
-                Discount_Price_Total REAL NOT NULL,
-                Status VARCHAR NOT NULL,
-                CONSTRAINT order_id PRIMARY KEY (BroncoID, Order_ID)
-);
-
-
-ALTER SEQUENCE public.orders_order_id_seq OWNED BY public.Orders.Order_ID;
-
-CREATE TABLE public.Order_Items (
-                BroncoID INTEGER NOT NULL,
-                Order_ID INTEGER NOT NULL,
-                Item_ID INTEGER NOT NULL,
-                Price_ID VARCHAR NOT NULL,
-                Price REAL NOT NULL,
-                CONSTRAINT orderitems PRIMARY KEY (BroncoID, Order_ID, Item_ID, Price_ID)
 );
 
 
@@ -82,38 +56,76 @@ CREATE TABLE public.Professor (
 
 CREATE TABLE public.Student (
                 BroncoID INTEGER NOT NULL,
-                Enter_Date DATE NOT NULL,
                 Major VARCHAR NOT NULL,
-                Minor VARCHAR NOT NULL,
-                Grad_Date DATE NOT NULL,
-                CONSTRAINT broncoid PRIMARY KEY (BroncoID)
+                Minor VARCHAR,
+                EnterDate DATE NOT NULL,
+                GradDate DATE NOT NULL,
+                CONSTRAINT customerID PRIMARY KEY (BroncoID)
 );
 
 
-ALTER TABLE public.Order_Items ADD CONSTRAINT items_order_items_fk
-FOREIGN KEY (Item_ID)
-REFERENCES public.Items (Item_ID)
+CREATE SEQUENCE public.orders_orderid_seq;
+
+CREATE TABLE public.Orders (
+                OrderID INTEGER NOT NULL DEFAULT nextval('public.orders_orderid_seq'),
+                BroncoID INTEGER NOT NULL,
+                Date DATE NOT NULL,
+                Time TIME NOT NULL,
+                Status VARCHAR NOT NULL,
+                OriginalPrice REAL NOT NULL,
+                DiscountPrice REAL NOT NULL,
+                CONSTRAINT order_id PRIMARY KEY (OrderID, BroncoID)
+);
+
+
+ALTER SEQUENCE public.orders_orderid_seq OWNED BY public.Orders.OrderID;
+
+CREATE SEQUENCE public.orderitems_orderitemid_seq;
+
+CREATE TABLE public.OrderItems (
+                OrderItemID INTEGER NOT NULL DEFAULT nextval('public.orderitems_orderitemid_seq'),
+                OrderID INTEGER NOT NULL,
+                BroncoID INTEGER NOT NULL,
+                ItemID INTEGER NOT NULL,
+                Price REAL NOT NULL,
+                PriceID INTEGER NOT NULL,
+                CONSTRAINT orderitems_pk PRIMARY KEY (OrderItemID)
+);
+
+
+ALTER SEQUENCE public.orderitems_orderitemid_seq OWNED BY public.OrderItems.OrderItemID;
+
+ALTER TABLE public.OrderItems ADD CONSTRAINT items_orderitems_fk
+FOREIGN KEY (ItemID)
+REFERENCES public.Items (ItemID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public.Item_Picture ADD CONSTRAINT items_item_picture_fk
-FOREIGN KEY (Item_ID)
-REFERENCES public.Items (Item_ID)
+ALTER TABLE public.ItemPicture ADD CONSTRAINT items_itempicture_fk
+FOREIGN KEY (ItemID)
+REFERENCES public.Items (ItemID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public.Historical_Price ADD CONSTRAINT items_historical_price_fk
-FOREIGN KEY (Item_ID)
-REFERENCES public.Items (Item_ID)
+ALTER TABLE public.HistoricalPrice ADD CONSTRAINT items_historicalprice_fk
+FOREIGN KEY (ItemID)
+REFERENCES public.Items (ItemID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public.Order_Items ADD CONSTRAINT historical_price_order_items_fk
-FOREIGN KEY (Item_ID, Price_ID)
-REFERENCES public.Historical_Price (Item_ID, Price_ID)
+ALTER TABLE public.OrderItems ADD CONSTRAINT historicalprice_orderitems_fk
+FOREIGN KEY (PriceID, ItemID)
+REFERENCES public.HistoricalPrice (PriceID, ItemID)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.Orders ADD CONSTRAINT customer_orders_fk
+FOREIGN KEY (BroncoID)
+REFERENCES public.Customer (BroncoID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -132,16 +144,9 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public.Orders ADD CONSTRAINT customer_orders_fk
-FOREIGN KEY (BroncoID)
-REFERENCES public.Customer (BroncoID)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.Order_Items ADD CONSTRAINT orders_order_items_fk
-FOREIGN KEY (BroncoID, Order_ID)
-REFERENCES public.Orders (BroncoID, Order_ID)
+ALTER TABLE public.OrderItems ADD CONSTRAINT orders_orderitems_fk
+FOREIGN KEY (OrderID, BroncoID)
+REFERENCES public.Orders (OrderID, BroncoID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
