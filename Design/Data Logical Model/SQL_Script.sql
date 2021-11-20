@@ -61,7 +61,7 @@ CREATE TABLE public.Student (
                 Minor VARCHAR,
                 EnterDate DATE NOT NULL,
                 GradDate DATE NOT NULL,
-                CONSTRAINT customer PRIMARY KEY (BroncoID)
+                CONSTRAINT customer_id PRIMARY KEY (BroncoID)
 );
 
 
