@@ -90,6 +90,7 @@ CREATE TABLE public.OrderItems (
                 ItemID INTEGER NOT NULL,
                 Price REAL NOT NULL,
                 PriceID INTEGER NOT NULL,
+                Quantity INTEGER NOT NULL,
                 CONSTRAINT orderitems_pk PRIMARY KEY (OrderItemID)
 );
 
