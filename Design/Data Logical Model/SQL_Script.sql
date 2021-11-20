@@ -4,6 +4,7 @@ CREATE SEQUENCE public.items_itemid_seq;
 CREATE TABLE public.Items (
                 ItemID INTEGER NOT NULL DEFAULT nextval('public.items_itemid_seq'),
                 Name VARCHAR NOT NULL,
+                Type VARCHAR NOT NULL,
                 CONSTRAINT items_pk PRIMARY KEY (ItemID)
 );
 
@@ -60,7 +61,7 @@ CREATE TABLE public.Student (
                 Minor VARCHAR,
                 EnterDate DATE NOT NULL,
                 GradDate DATE NOT NULL,
-                CONSTRAINT customerID PRIMARY KEY (BroncoID)
+                CONSTRAINT customer PRIMARY KEY (BroncoID)
 );
 
 
